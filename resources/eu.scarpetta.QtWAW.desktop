@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=QtWAW
+Comment=A desktop application for Whatsapp Web
+Exec=qtwaw
+Icon=eu.scarpetta.QtWAW
+Terminal=false
+Type=Application
+StartupNotify=true
+Categories=Network;InstantMessaging
