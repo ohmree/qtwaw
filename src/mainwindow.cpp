@@ -23,20 +23,62 @@
 #include <QTimer>
 #include <QMenu>
 #include <QStandardPaths>
-#include <QDir>
 #include <QMimeDatabase>
-#include <QLockFile>
+#include <QDir>
 
 #define ICON "%1/../share/icons/hicolor/256x256/apps/eu.scarpetta.QtWAW.png"
 #define USER_AGENT "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) \
 Chrome/78.0.3904.87 Safari/537.36"
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    m_settings(new QSettings("QtWAW", "qtwaw", this)),
-    m_profile(new QWebEngineProfile(QString("QtWAW"), this)),
-    m_page(new QWebEnginePage(m_profile, this))
+    QMainWindow(parent)
 {
+
+}
+
+bool MainWindow::is_unlocked()
+{
+    QDir tmp_dir(QDir::tempPath());
+    tmp_dir.mkdir("QtWAW");
+    tmp_dir.cd("QtWAW");
+
+    QString message_file_path = tmp_dir.absoluteFilePath("QtWAW.message");
+    QFile file(message_file_path);
+    if (file.open(QIODevice::WriteOnly))
+    {
+        QTextStream stream(&file);
+        stream << "QtWAW" << endl;
+    }
+
+    QString lock_file_path = tmp_dir.absoluteFilePath("QtWAW.lock");
+    m_lock_file = new QLockFile(lock_file_path);
+    if (!m_lock_file->tryLock(0))
+        return false;
+
+    m_watcher = new QFileSystemWatcher(this);
+    m_watcher->addPath(message_file_path);
+    connect(m_watcher,
+            SIGNAL(fileChanged(const QString &)),
+            SLOT(message_file_changed(const QString &)));
+
+    return true;
+}
+
+void MainWindow::message_file_changed(const QString &path)
+{
+    Q_UNUSED(path)
+
+    this->show();
+    this->activateWindow();
+    this->raise();
+}
+
+void MainWindow::init()
+{
+    m_settings = new QSettings("QtWAW", "qtwaw", this);
+    m_profile = new QWebEngineProfile(QString("QtWAW"), this);
+    m_page = new QWebEnginePage(m_profile, this);
+
     QIcon icon = QIcon(QString(ICON).arg(qApp->applicationDirPath()));
 
     // Main winow properties
@@ -138,6 +180,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(m_profile,
             SIGNAL(downloadRequested(QWebEngineDownloadItem *)),
             SLOT(download_requested(QWebEngineDownloadItem *)));
+
+    this->show();
 }
 
 void MainWindow::FIXME_trigger_permission_request()
@@ -281,11 +325,14 @@ void MainWindow::quit()
     m_settings->setValue("zoom_factor", m_page->zoomFactor());
     m_settings->sync();
 
-    QDir tmp_dir(QDir::tempPath());
-    QLockFile lock_file(tmp_dir.absoluteFilePath("QtWAW.lock"));
-    lock_file.unlock();
-
     delete m_page;
+
+    m_lock_file->unlock();
+    delete m_lock_file;
+
+    QDir tmp_dir(QDir::tempPath());
+    tmp_dir.cd("QtWAW");
+    tmp_dir.removeRecursively();
 
     qApp->quit();
 }

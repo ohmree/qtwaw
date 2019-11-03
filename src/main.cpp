@@ -18,18 +18,10 @@
 
 #include <QApplication>
 #include <QTranslator>
-#include <QLibraryInfo>
-#include <QLockFile>
-#include <QDir>
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
-    QDir tmp_dir(QDir::tempPath());
-    QLockFile lock_file(tmp_dir.absoluteFilePath("QtWAW.lock"));
-    if(!lock_file.tryLock(100))
-        return 0;
-
     QCoreApplication::setOrganizationName("QtWAW");
     QCoreApplication::setOrganizationDomain("scarpetta.eu");
     QCoreApplication::setApplicationName("qtwaw");
@@ -55,7 +47,12 @@ int main(int argc, char *argv[])
 
     // Create and show the main window
     MainWindow *main_window = new MainWindow();
-    main_window->show();
 
-    return app.exec();
+    if (main_window->is_unlocked())
+    {
+        main_window->init();
+        return app.exec();
+    }
+    else
+        return 0;
 }

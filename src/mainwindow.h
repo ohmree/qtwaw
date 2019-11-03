@@ -26,6 +26,8 @@
 #include <QWebEngineProfile>
 #include <QWebEngineNotification>
 #include <QSystemTrayIcon>
+#include <QLockFile>
+#include <QFileSystemWatcher>
 
 class MainWindow : public QMainWindow
 {
@@ -33,8 +35,12 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
 
+    bool is_unlocked();
+
+    void init();
+
 public slots:
-    void closeEvent(QCloseEvent *event);
+    void message_file_changed(const QString &path);
 
     void FIXME_trigger_permission_request();
 
@@ -57,9 +63,14 @@ public slots:
 
     void download_finished();
 
+    void closeEvent(QCloseEvent *event);
+
     void quit();
 
 private:
+    QLockFile *m_lock_file;
+    QFileSystemWatcher *m_watcher;
+
     QSettings *m_settings;
 
     QWebEngineView m_view;
