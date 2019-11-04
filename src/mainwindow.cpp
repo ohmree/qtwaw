@@ -77,7 +77,7 @@ void MainWindow::init()
 {
     m_settings = new QSettings("QtWAW", "qtwaw", this);
     m_profile = new QWebEngineProfile(QString("QtWAW"), this);
-    m_page = new QWebEnginePage(m_profile, this);
+    m_page = new WebEnginePage(m_profile, this);
 
     QIcon icon = QIcon(QString(ICON).arg(qApp->applicationDirPath()));
 

@@ -14,6 +14,8 @@ SET (
     src/main.cpp
     src/mainwindow.cpp
     src/mainwindow.h
+    src/webenginepage.cpp
+    src/webenginepage.h
 )
 
 file(GLOB TS_FILES

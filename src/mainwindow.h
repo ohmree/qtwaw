@@ -19,10 +19,11 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "webenginepage.h"
+
 #include <QMainWindow>
 #include <QSettings>
 #include <QtWebEngineWidgets/QWebEngineView>
-#include <QWebEnginePage>
 #include <QWebEngineProfile>
 #include <QWebEngineNotification>
 #include <QSystemTrayIcon>
@@ -75,7 +76,7 @@ private:
 
     QWebEngineView m_view;
     QWebEngineProfile *m_profile;
-    QWebEnginePage *m_page;
+    WebEnginePage *m_page;
     QSystemTrayIcon m_tray_icon;
 };
 
