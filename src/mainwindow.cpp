@@ -27,8 +27,7 @@
 #include <QDir>
 
 #define ICON "%1/../share/icons/hicolor/256x256/apps/eu.scarpetta.QtWAW.png"
-#define USER_AGENT "Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko) \
-Chrome/78.0.3904.87 Safari/537.36"
+#define USER_AGENT "Mozilla/5.0 Gecko/20100101 Firefox/70.0"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
@@ -75,9 +74,14 @@ void MainWindow::message_file_changed(const QString &path)
 
 void MainWindow::init()
 {
-    m_settings = new QSettings("QtWAW", "qtwaw", this);
-    m_profile = new QWebEngineProfile(QString("QtWAW"), this);
+    m_settings = new QSettings(this);
+    m_profile = new QWebEngineProfile("QtWAW", this);
     m_page = new WebEnginePage(m_profile, this);
+
+    // workaround: remove "Service Worker" directory
+    QDir web_engine_dir(m_profile->persistentStoragePath());
+    web_engine_dir.cd("Service Worker");
+    web_engine_dir.removeRecursively();
 
     QIcon icon = QIcon(QString(ICON).arg(qApp->applicationDirPath()));
 

@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("QtWAW");
     QCoreApplication::setOrganizationDomain("scarpetta.eu");
     QCoreApplication::setApplicationName("qtwaw");
-    QCoreApplication::setApplicationVersion("1.0");
+    QCoreApplication::setApplicationVersion("1.3");
 
     // Set application informations
     QApplication app(argc, argv);
