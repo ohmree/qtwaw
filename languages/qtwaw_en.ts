@@ -35,5 +35,9 @@
         <source>File %1 have beens successfully downloaded</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Start minimized</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

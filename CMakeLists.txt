@@ -1,16 +1,17 @@
 cmake_minimum_required (VERSION 3.1)
 
-project (QtWAW)
+project(QtWAW)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package (Qt5 REQUIRED COMPONENTS Widgets LinguistTools WebEngineWidgets)
+find_package(Qt5 REQUIRED COMPONENTS Widgets LinguistTools WebEngineWidgets)
+find_package(KF5DBusAddons)
+find_package(KF5Notifications)
 
-SET (
-    SRCS
+SET(SRCS
     src/main.cpp
     src/mainwindow.cpp
     src/mainwindow.h
@@ -25,16 +26,18 @@ file(GLOB TS_FILES
 
 qt5_create_translation(QM_FILES ${SRCS} ${TS_FILES} OPTIONS -no-obsolete)
 
-add_executable (
+add_executable(
     qtwaw
     ${SRCS}
     ${QM_FILES}
 )
 
-target_link_libraries (
+target_link_libraries(
     qtwaw
     ${Qt5Widgets_LIBRARIES}
     ${Qt5WebEngineWidgets_LIBRARIES}
+    KF5::Notifications
+    KF5::DBusAddons
 )
 
 install(TARGETS qtwaw RUNTIME DESTINATION bin)

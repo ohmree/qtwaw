@@ -18,6 +18,8 @@
 
 #include <QApplication>
 #include <QTranslator>
+#include <KDBusAddons/KDBusService>
+
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
@@ -25,13 +27,15 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("QtWAW");
     QCoreApplication::setOrganizationDomain("scarpetta.eu");
     QCoreApplication::setApplicationName("qtwaw");
-    QCoreApplication::setApplicationVersion("1.3");
+    QCoreApplication::setApplicationVersion("1.4");
 
     // Set application informations
     QApplication app(argc, argv);
 
     app.setApplicationDisplayName("QtWAW");
     app.setDesktopFileName("eu.scarpetta.QtWAW");
+
+    KDBusService service(KDBusService::Unique);
 
     // Set up translations
     QTranslator translator;
@@ -48,11 +52,10 @@ int main(int argc, char *argv[])
     // Create and show the main window
     MainWindow *main_window = new MainWindow();
 
-    if (main_window->is_unlocked())
-    {
-        main_window->init();
-        return app.exec();
-    }
-    else
-        return 0;
+    QObject::connect(&service,
+                     SIGNAL(activateRequested(const QStringList &,
+                                              const QString &)),
+                     main_window,
+                     SLOT(activate_requested()));
+    return app.exec();
 }

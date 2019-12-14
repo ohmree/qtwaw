@@ -26,68 +26,28 @@
 #include <QMimeDatabase>
 #include <QDir>
 
-#define ICON "%1/../share/icons/hicolor/256x256/apps/eu.scarpetta.QtWAW.png"
 #define USER_AGENT "Mozilla/5.0 Gecko/20100101 Firefox/70.0"
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent)
+    QMainWindow(parent),
+    m_settings(new QSettings(this)),
+    m_status_notifier(new KStatusNotifierItem(this))
 {
-
-}
-
-bool MainWindow::is_unlocked()
-{
-    QDir tmp_dir(QDir::tempPath());
-    tmp_dir.mkdir("QtWAW");
-    tmp_dir.cd("QtWAW");
-
-    QString message_file_path = tmp_dir.absoluteFilePath("QtWAW.message");
-    QFile file(message_file_path);
-    if (file.open(QIODevice::WriteOnly))
-    {
-        QTextStream stream(&file);
-        stream << "QtWAW" << endl;
-    }
-
-    QString lock_file_path = tmp_dir.absoluteFilePath("QtWAW.lock");
-    m_lock_file = new QLockFile(lock_file_path);
-    if (!m_lock_file->tryLock(0))
-        return false;
-
-    m_watcher = new QFileSystemWatcher(this);
-    m_watcher->addPath(message_file_path);
-    connect(m_watcher,
-            SIGNAL(fileChanged(const QString &)),
-            SLOT(message_file_changed(const QString &)));
-
-    return true;
-}
-
-void MainWindow::message_file_changed(const QString &path)
-{
-    Q_UNUSED(path)
-
-    this->show();
-    this->activateWindow();
-    this->raise();
-}
-
-void MainWindow::init()
-{
-    m_settings = new QSettings(this);
     m_profile = new QWebEngineProfile("QtWAW", this);
     m_page = new WebEnginePage(m_profile, this);
+
+    icon = QIcon(QString("%1/../share/icons/hicolor/256x256/apps/"
+                         "eu.scarpetta.QtWAW.png").arg(
+                     qApp->applicationDirPath()));
 
     // workaround: remove "Service Worker" directory
     QDir web_engine_dir(m_profile->persistentStoragePath());
     web_engine_dir.cd("Service Worker");
     web_engine_dir.removeRecursively();
 
-    QIcon icon = QIcon(QString(ICON).arg(qApp->applicationDirPath()));
-
     // Main winow properties
     this->setMinimumSize(400, 400);
-    this->setWindowIcon(icon);
+    this->setWindowIcon(QIcon::fromTheme("eu.scarpetta.QtWAW"));
     this->setWindowTitle("QtWAW");
     this->restoreGeometry(
                 m_settings->value("main_window_geometry").toByteArray()
@@ -141,11 +101,29 @@ void MainWindow::init()
             &m_view,
             SLOT(reload()));
 
+    QAction *start_minimized_action = new QAction(
+                tr("Start minimized"),
+                this);
+    start_minimized_action->setCheckable(true);
+    start_minimized_action->setChecked(
+                m_settings->value("start_minimized", false).toBool());
+    connect(start_minimized_action,
+            SIGNAL(toggled(bool)),
+            SLOT(start_minimized_toggled(bool)));
+
     QMenu *tray_menu = new QMenu(this);
+    tray_menu->addAction(refresh_action);
+    tray_menu->addAction(zoom_in_action);
+    tray_menu->addAction(zoom_out_action);
+    tray_menu->addAction(zoom_original_action);
+    tray_menu->addAction(start_minimized_action);
     tray_menu->addAction(quit_action);
-    m_tray_icon.setIcon(icon);
-    m_tray_icon.setVisible(true);
-    m_tray_icon.setContextMenu(tray_menu);
+
+    m_status_notifier->setContextMenu(tray_menu);
+    m_status_notifier->setStandardActionsEnabled(false);
+    m_status_notifier->setIconByName("eu.scarpetta.QtWAW");
+    m_status_notifier->setCategory(KStatusNotifierItem::Communications);
+    m_status_notifier->setStatus(KStatusNotifierItem::Passive);
 
     this->setCentralWidget(&m_view);
 
@@ -165,15 +143,15 @@ void MainWindow::init()
     m_view.setPage(m_page);
 
     QTimer timer;
-    timer.singleShot(20000, this, SLOT(FIXME_trigger_permission_request()));
+    timer.singleShot(60000, this, SLOT(FIXME_trigger_permission_request()));
 
     connect(m_page,
             SIGNAL(titleChanged(const QString)),
             SLOT(title_changed(const QString)));
 
-    connect(&m_tray_icon,
-            SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-            SLOT(tray_icon_activated(QSystemTrayIcon::ActivationReason)));
+    connect(m_status_notifier,
+            SIGNAL(activateRequested(bool, const QPoint &)),
+            SLOT(tray_icon_activated(bool, const QPoint &)));
 
     connect(m_page,
             SIGNAL(featurePermissionRequested(
@@ -185,7 +163,19 @@ void MainWindow::init()
             SIGNAL(downloadRequested(QWebEngineDownloadItem *)),
             SLOT(download_requested(QWebEngineDownloadItem *)));
 
+    if (m_settings->value("start_minimized", false).toBool())
+        this->hide();
+    else
+        this->show();
+}
+
+void MainWindow::message_file_changed(const QString &path)
+{
+    Q_UNUSED(path)
+
     this->show();
+    this->activateWindow();
+    this->raise();
 }
 
 void MainWindow::FIXME_trigger_permission_request()
@@ -199,19 +189,25 @@ void MainWindow::FIXME_trigger_permission_request()
     m_page->runJavaScript(script);
 }
 
-void MainWindow::tray_icon_activated(QSystemTrayIcon::ActivationReason reason)
+void MainWindow::tray_icon_activated(bool active, const QPoint &pos)
 {
-    if (reason == (QSystemTrayIcon::Trigger | QSystemTrayIcon::DoubleClick))
+    Q_UNUSED(pos)
+
+    if (active)
     {
-        if (this->isVisible())
-            this->hide();
-        else
-        {
-            this->show();
-            this->activateWindow();
-            this->raise();
-        }
+        this->show();
+        this->activateWindow();
+        this->raise();
     }
+    else
+        this->hide();
+}
+
+void MainWindow::activate_requested()
+{
+    this->show();
+    this->activateWindow();
+    this->raise();
 }
 
 void MainWindow::feature_request(const QUrl &securityOrigin,
@@ -240,9 +236,13 @@ void MainWindow::zoom_original()
     m_page->setZoomFactor(1.0);
 }
 
+void MainWindow::start_minimized_toggled(bool checked)
+{
+    m_settings->setValue("start_minimized", checked);
+}
+
 void MainWindow::title_changed(const QString &title)
 {
-    QIcon icon = QIcon(QString(ICON).arg(qApp->applicationDirPath()));
     int a = title.indexOf('(');
     if (a > -1)
     {
@@ -271,18 +271,23 @@ void MainWindow::title_changed(const QString &title)
         painter.setPen(QColor(Qt::white));
         painter.drawText(rect, count, QTextOption(Qt::AlignCenter));
 
-        icon.addPixmap(pixmap);
+        m_status_notifier->setIconByPixmap(pixmap);
+        m_status_notifier->setStatus(KStatusNotifierItem::Active);
     }
-
-    m_tray_icon.setIcon(icon);
+    else
+    {
+        m_status_notifier->setIconByName("eu.scarpetta.QtWAW");
+        m_status_notifier->setStatus(KStatusNotifierItem::Passive);
+    }
 }
 
 void MainWindow::notification_presenter(QWebEngineNotification *notification)
 {
-    m_tray_icon.showMessage(notification->title(),
-                            notification->message(),
-                            QIcon(QPixmap::fromImage(notification->icon())),
-                            5000);
+    m_status_notifier->showMessage(
+                notification->title(),
+                notification->message(),
+                "eu.scarpetta.QtWAW",
+                5000);
 }
 
 void MainWindow::download_requested(QWebEngineDownloadItem *download)
@@ -310,11 +315,12 @@ void MainWindow::download_finished()
     QWebEngineDownloadItem * download =
             static_cast<QWebEngineDownloadItem *>(QObject::sender());
 
-    m_tray_icon.showMessage(tr("Download completed"),
-                            tr("File %1 have beens successfully downloaded")
-                            .arg(QUrl(download->path()).fileName()),
-                            this->windowIcon(),
-                            5000);
+    m_status_notifier->showMessage(
+                tr("Download completed"),
+                tr("File %1 have beens successfully downloaded")
+                .arg(QUrl(download->path()).fileName()),
+                "eu.scarpetta.QtWAW",
+                5000);
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -330,13 +336,6 @@ void MainWindow::quit()
     m_settings->sync();
 
     delete m_page;
-
-    m_lock_file->unlock();
-    delete m_lock_file;
-
-    QDir tmp_dir(QDir::tempPath());
-    tmp_dir.cd("QtWAW");
-    tmp_dir.removeRecursively();
 
     qApp->quit();
 }

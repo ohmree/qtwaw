@@ -26,19 +26,14 @@
 #include <QtWebEngineWidgets/QWebEngineView>
 #include <QWebEngineProfile>
 #include <QWebEngineNotification>
-#include <QSystemTrayIcon>
-#include <QLockFile>
-#include <QFileSystemWatcher>
+#include <QSettings>
+#include <KF5/KNotifications/KStatusNotifierItem>
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-
-    bool is_unlocked();
-
-    void init();
 
 public slots:
     void message_file_changed(const QString &path);
@@ -48,13 +43,17 @@ public slots:
     void feature_request(const QUrl &securityOrigin,
                          QWebEnginePage::Feature feature);
 
-    void tray_icon_activated(QSystemTrayIcon::ActivationReason reason);
+    void tray_icon_activated(bool active, const QPoint &pos);
+
+    void activate_requested();
 
     void zoom_in();
 
     void zoom_out();
 
     void zoom_original();
+
+    void start_minimized_toggled(bool checked);
 
     void title_changed(const QString &title);
 
@@ -69,15 +68,13 @@ public slots:
     void quit();
 
 private:
-    QLockFile *m_lock_file;
-    QFileSystemWatcher *m_watcher;
-
     QSettings *m_settings;
 
     QWebEngineView m_view;
     QWebEngineProfile *m_profile;
     WebEnginePage *m_page;
-    QSystemTrayIcon m_tray_icon;
+    KStatusNotifierItem *m_status_notifier;
+    QIcon icon;
 };
 
 #endif // MAINWINDOW_H
