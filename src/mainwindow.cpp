@@ -31,6 +31,7 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     m_settings(new QSettings(this)),
+    m_net_manager(new QNetworkConfigurationManager(this)),
     m_status_notifier(new KStatusNotifierItem(this))
 {
     m_profile = new QWebEngineProfile("QtWAW", this);
@@ -163,10 +164,29 @@ MainWindow::MainWindow(QWidget *parent) :
             SIGNAL(downloadRequested(QWebEngineDownloadItem *)),
             SLOT(download_requested(QWebEngineDownloadItem *)));
 
+    // Check if the system is online
+    if (!m_net_manager->isOnline())
+        connect(m_net_manager,
+                SIGNAL(onlineStateChanged(bool)),
+                SLOT(online_status_changed(bool)));
+
     if (m_settings->value("start_minimized", false).toBool())
         this->hide();
     else
         this->show();
+}
+
+void MainWindow::online_status_changed(bool is_online)
+{
+    if (is_online)
+    {
+        m_view.reload();
+
+        disconnect(m_net_manager,
+                   SIGNAL(onlineStateChanged(bool)),
+                   this,
+                   SLOT(gone_online()));
+    }
 }
 
 void MainWindow::message_file_changed(const QString &path)

@@ -28,6 +28,7 @@
 #include <QWebEngineNotification>
 #include <QSettings>
 #include <KF5/KNotifications/KStatusNotifierItem>
+#include <QNetworkConfigurationManager>
 
 class MainWindow : public QMainWindow
 {
@@ -36,6 +37,8 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
 
 public slots:
+    void online_status_changed(bool is_online);
+
     void message_file_changed(const QString &path);
 
     void FIXME_trigger_permission_request();
@@ -70,6 +73,7 @@ public slots:
 private:
     QSettings *m_settings;
 
+    QNetworkConfigurationManager * m_net_manager;
     QWebEngineView m_view;
     QWebEngineProfile *m_profile;
     WebEnginePage *m_page;
