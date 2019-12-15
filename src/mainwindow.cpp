@@ -25,6 +25,8 @@
 #include <QStandardPaths>
 #include <QMimeDatabase>
 #include <QDir>
+#include <KNotifications/KNotification>
+#include <QDesktopServices>
 
 #define USER_AGENT "Mozilla/5.0 Gecko/20100101 Firefox/70.0"
 
@@ -150,10 +152,6 @@ MainWindow::MainWindow(QWidget *parent) :
             SIGNAL(titleChanged(const QString)),
             SLOT(title_changed(const QString)));
 
-    connect(m_status_notifier,
-            SIGNAL(activateRequested(bool, const QPoint &)),
-            SLOT(tray_icon_activated(bool, const QPoint &)));
-
     connect(m_page,
             SIGNAL(featurePermissionRequested(
                        const QUrl&,
@@ -189,15 +187,6 @@ void MainWindow::online_status_changed(bool is_online)
     }
 }
 
-void MainWindow::message_file_changed(const QString &path)
-{
-    Q_UNUSED(path)
-
-    this->show();
-    this->activateWindow();
-    this->raise();
-}
-
 void MainWindow::FIXME_trigger_permission_request()
 {
     QString script = ""
@@ -209,21 +198,7 @@ void MainWindow::FIXME_trigger_permission_request()
     m_page->runJavaScript(script);
 }
 
-void MainWindow::tray_icon_activated(bool active, const QPoint &pos)
-{
-    Q_UNUSED(pos)
-
-    if (active)
-    {
-        this->show();
-        this->activateWindow();
-        this->raise();
-    }
-    else
-        this->hide();
-}
-
-void MainWindow::activate_requested()
+void MainWindow::raise_main_window()
 {
     this->show();
     this->activateWindow();
@@ -303,11 +278,17 @@ void MainWindow::title_changed(const QString &title)
 
 void MainWindow::notification_presenter(QWebEngineNotification *notification)
 {
-    m_status_notifier->showMessage(
-                notification->title(),
-                notification->message(),
-                "eu.scarpetta.QtWAW",
-                5000);
+    KNotification *n = new KNotification(
+                "new-message",
+                this,
+                KNotification::CloseOnTimeout |
+                KNotification::CloseWhenWidgetActivated);
+    n->setTitle(notification->title());
+    n->setText(notification->message());
+    n->setPixmap(QPixmap::fromImage(notification->icon()));
+    n->setDefaultAction(tr("Open"));
+    connect(n, SIGNAL(activated()), SLOT(raise_main_window()));
+    n->sendEvent();
 }
 
 void MainWindow::download_requested(QWebEngineDownloadItem *download)
@@ -335,12 +316,18 @@ void MainWindow::download_finished()
     QWebEngineDownloadItem * download =
             static_cast<QWebEngineDownloadItem *>(QObject::sender());
 
-    m_status_notifier->showMessage(
-                tr("Download completed"),
-                tr("File %1 have beens successfully downloaded")
-                .arg(QUrl(download->path()).fileName()),
-                "eu.scarpetta.QtWAW",
-                5000);
+    KNotification *n = new KNotification(
+                "download-finished",
+                this,
+                KNotification::CloseOnTimeout |
+                KNotification::CloseWhenWidgetActivated);
+    n->setTitle(tr("Download completed"));
+    n->setText(tr("File %1 have beens successfully downloaded")
+               .arg(QUrl(download->path()).fileName()));
+    QList<QUrl> urls;
+    urls.push_back(QUrl(download->path()));
+    n->setUrls(urls);
+    n->sendEvent();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

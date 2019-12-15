@@ -1,0 +1,14 @@
+[Global]
+IconName=eu.scarpetta.QtWAW
+Comment=A desktop application for Whatsapp Web
+Name=QtWAW
+
+[Event/new-message]
+Name=New message
+Comment=You have got a new message
+Action=Popup
+
+[Event/download-finished]
+Name=New message
+Comment=You have got a new message
+Action=Popup

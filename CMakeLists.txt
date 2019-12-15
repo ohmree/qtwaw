@@ -48,6 +48,7 @@ install(FILES resources/icon_64.png DESTINATION share/icons/hicolor/64x64/apps R
 install(FILES resources/icon_128.png DESTINATION share/icons/hicolor/128x128/apps RENAME eu.scarpetta.QtWAW.png)
 install(FILES resources/icon_256.png DESTINATION share/icons/hicolor/256x256/apps RENAME eu.scarpetta.QtWAW.png)
 install(FILES ${QM_FILES} DESTINATION share/qtwaw/translations)
+install(FILES resources/qtwaw.notifyrc DESTINATION share/knotifications5)
 
 add_custom_command(
     TARGET qtwaw

@@ -39,16 +39,12 @@ public:
 public slots:
     void online_status_changed(bool is_online);
 
-    void message_file_changed(const QString &path);
-
     void FIXME_trigger_permission_request();
 
     void feature_request(const QUrl &securityOrigin,
                          QWebEnginePage::Feature feature);
 
-    void tray_icon_activated(bool active, const QPoint &pos);
-
-    void activate_requested();
+    void raise_main_window();
 
     void zoom_in();
 
