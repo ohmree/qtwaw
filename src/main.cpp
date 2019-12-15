@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("QtWAW");
     QCoreApplication::setOrganizationDomain("scarpetta.eu");
     QCoreApplication::setApplicationName("qtwaw");
-    QCoreApplication::setApplicationVersion("1.6");
+    QCoreApplication::setApplicationVersion("1.6.1");
 
     // Set application informations
     QApplication app(argc, argv);
@@ -56,6 +56,6 @@ int main(int argc, char *argv[])
                      SIGNAL(activateRequested(const QStringList &,
                                               const QString &)),
                      main_window,
-                     SLOT(activate_requested()));
+                     SLOT(raise_main_window()));
     return app.exec();
 }
