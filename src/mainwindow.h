@@ -54,6 +54,8 @@ public slots:
 
     void start_minimized_toggled(bool checked);
 
+    void close_to_tray_toggled(bool checked);
+
     void title_changed(const QString &title);
 
     void notification_presenter(QWebEngineNotification *notification);

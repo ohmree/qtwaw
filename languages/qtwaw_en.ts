@@ -43,5 +43,9 @@
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Close to tray</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

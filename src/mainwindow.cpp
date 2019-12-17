@@ -114,12 +114,23 @@ MainWindow::MainWindow(QWidget *parent) :
             SIGNAL(toggled(bool)),
             SLOT(start_minimized_toggled(bool)));
 
+    QAction *close_to_tray_action = new QAction(
+                tr("Close to tray"),
+                this);
+    close_to_tray_action->setCheckable(true);
+    close_to_tray_action->setChecked(
+                m_settings->value("close_to_tray", true).toBool());
+    connect(close_to_tray_action,
+            SIGNAL(toggled(bool)),
+            SLOT(close_to_tray_toggled(bool)));
+
     QMenu *tray_menu = new QMenu(this);
     tray_menu->addAction(refresh_action);
     tray_menu->addAction(zoom_in_action);
     tray_menu->addAction(zoom_out_action);
     tray_menu->addAction(zoom_original_action);
     tray_menu->addAction(start_minimized_action);
+    tray_menu->addAction(close_to_tray_action);
     tray_menu->addAction(quit_action);
 
     m_status_notifier->setContextMenu(tray_menu);
@@ -236,6 +247,11 @@ void MainWindow::start_minimized_toggled(bool checked)
     m_settings->setValue("start_minimized", checked);
 }
 
+void MainWindow::close_to_tray_toggled(bool checked)
+{
+    m_settings->setValue("close_to_tray", checked);
+}
+
 void MainWindow::title_changed(const QString &title)
 {
     int a = title.indexOf('(');
@@ -333,7 +349,11 @@ void MainWindow::download_finished()
 void MainWindow::closeEvent(QCloseEvent *event)
 {
     Q_UNUSED(event)
-    this->hide();
+
+    if (m_settings->value("close_to_tray", true).toBool())
+        this->hide();
+    else
+        this->quit();
 }
 
 void MainWindow::quit()
