@@ -23,12 +23,12 @@
 #include <QTimer>
 #include <QMenu>
 #include <QStandardPaths>
-#include <QMimeDatabase>
 #include <QDir>
 #include <KNotifications/KNotification>
 #include <QDesktopServices>
 
-#define USER_AGENT "Mozilla/5.0 Gecko/20100101 Firefox/70.0"
+#define USER_AGENT "Mozilla/5.0 (X11; Linux x86_64; rv:71.0) \
+Gecko/20100101 Firefox/71.0"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -44,9 +44,9 @@ MainWindow::MainWindow(QWidget *parent) :
                      qApp->applicationDirPath()));
 
     // workaround: remove "Service Worker" directory
-    QDir web_engine_dir(m_profile->persistentStoragePath());
-    web_engine_dir.cd("Service Worker");
-    web_engine_dir.removeRecursively();
+//    QDir web_engine_dir(m_profile->persistentStoragePath());
+//    web_engine_dir.cd("Service Worker");
+//    web_engine_dir.removeRecursively();
 
     // Main winow properties
     this->setMinimumSize(400, 400);
@@ -309,18 +309,14 @@ void MainWindow::notification_presenter(QWebEngineNotification *notification)
 
 void MainWindow::download_requested(QWebEngineDownloadItem *download)
 {
-    QMimeDatabase db;
-
     QDir dir(QStandardPaths::writableLocation(
                  QStandardPaths::DownloadLocation));
     if (!dir.exists("WhatsApp"))
         dir.mkdir("WhatsApp");
     dir.cd("WhatsApp");
 
-    QMimeType mime = db.mimeTypeForName(download->mimeType());
-    download->setPath(dir.absoluteFilePath(download->url().fileName() +
-                                           "." +
-                                           mime.suffixes().at(0)));
+    download->setDownloadDirectory(dir.path());
+    download->setDownloadFileName(download->suggestedFileName());
 
     connect(download, SIGNAL(finished()), SLOT(download_finished()));
 
@@ -339,9 +335,10 @@ void MainWindow::download_finished()
                 KNotification::CloseWhenWidgetActivated);
     n->setTitle(tr("Download completed"));
     n->setText(tr("File %1 have beens successfully downloaded")
-               .arg(QUrl(download->path()).fileName()));
+               .arg(download->downloadFileName()));
+    QDir dir = download->downloadDirectory();
     QList<QUrl> urls;
-    urls.push_back(QUrl(download->path()));
+    urls.push_back(dir.absoluteFilePath(download->downloadFileName()));
     n->setUrls(urls);
     n->sendEvent();
 }
