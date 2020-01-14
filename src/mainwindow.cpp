@@ -27,8 +27,8 @@
 #include <KNotifications/KNotification>
 #include <QDesktopServices>
 
-#define USER_AGENT "Mozilla/5.0 (X11; Linux x86_64; rv:71.0) \
-Gecko/20100101 Firefox/71.0"
+#define USER_AGENT "Mozilla/5.0 (X11; Linux x86_64; rv:72.0) \
+Gecko/20100101 Firefox/72.0"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -44,9 +44,9 @@ MainWindow::MainWindow(QWidget *parent) :
                      qApp->applicationDirPath()));
 
     // workaround: remove "Service Worker" directory
-//    QDir web_engine_dir(m_profile->persistentStoragePath());
-//    web_engine_dir.cd("Service Worker");
-//    web_engine_dir.removeRecursively();
+    QDir web_engine_dir(m_profile->persistentStoragePath());
+    web_engine_dir.cd("Service Worker");
+    web_engine_dir.removeRecursively();
 
     // Main winow properties
     this->setMinimumSize(400, 400);
