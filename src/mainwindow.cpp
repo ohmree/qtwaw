@@ -27,8 +27,8 @@
 #include <KNotifications/KNotification>
 #include <QDesktopServices>
 
-#define USER_AGENT "Mozilla/5.0 (X11; Linux x86_64; rv:72.0) \
-Gecko/20100101 Firefox/72.0"
+#define USER_AGENT "Mozilla/5.0 (X11; Linux x86_64; rv:74.0) \
+Gecko/20100101 Firefox/74.0"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -101,7 +101,7 @@ MainWindow::MainWindow(QWidget *parent) :
     this->addAction(refresh_action);
     connect(refresh_action,
             SIGNAL(triggered()),
-            &m_view,
+            this,
             SLOT(reload()));
 
     QAction *start_minimized_action = new QAction(
@@ -240,6 +240,15 @@ void MainWindow::zoom_out()
 void MainWindow::zoom_original()
 {
     m_page->setZoomFactor(1.0);
+}
+
+void MainWindow::reload()
+{
+    QString script = "navigator.serviceWorker.getRegistration().then("
+                     "function (r) {r.unregister();"
+                     "document.location.reload()});";
+
+    m_page->runJavaScript(script);
 }
 
 void MainWindow::start_minimized_toggled(bool checked)

@@ -52,6 +52,8 @@ public slots:
 
     void zoom_original();
 
+    void reload();
+
     void start_minimized_toggled(bool checked);
 
     void close_to_tray_toggled(bool checked);
