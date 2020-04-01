@@ -245,9 +245,18 @@ void MainWindow::zoom_original()
 void MainWindow::reload()
 {
     QString script =
-            "navigator.serviceWorker.getRegistration().then("
-            "function (r) {r.unregister();"
-            "document.location.replace(\"https://web.whatsapp.com\")});";
+            "try {"
+            "navigator.serviceWorker.getRegistration()"
+            ".then(function (r) {"
+            "r.unregister();"
+            "document.location.replace(\"https://web.whatsapp.com\");"
+            "})"
+            ".catch(function (reason) {"
+            "document.location.replace(\"https://web.whatsapp.com\");"
+            "});"
+            "} catch(error) {"
+            "document.location.replace(\"https://web.whatsapp.com\");"
+            "}";
 
     m_page->runJavaScript(script);
 }
