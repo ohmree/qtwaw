@@ -225,6 +225,12 @@ void MainWindow::feature_request(const QUrl &securityOrigin,
         m_page->setFeaturePermission(securityOrigin,
                                      feature,
                                      QWebEnginePage::PermissionGrantedByUser);
+    else if (securityOrigin.host() == QString("web.whatsapp.com") &&
+            securityOrigin.scheme() == QString("https") &&
+            feature == QWebEnginePage::MediaAudioCapture)
+        m_page->setFeaturePermission(securityOrigin,
+                                     feature,
+                                     QWebEnginePage::PermissionGrantedByUser);
 }
 
 void MainWindow::zoom_in()
