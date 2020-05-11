@@ -221,13 +221,8 @@ void MainWindow::feature_request(const QUrl &securityOrigin,
 {
     if (securityOrigin.host() == QString("web.whatsapp.com") &&
             securityOrigin.scheme() == QString("https") &&
-            feature == QWebEnginePage::Notifications)
-        m_page->setFeaturePermission(securityOrigin,
-                                     feature,
-                                     QWebEnginePage::PermissionGrantedByUser);
-    else if (securityOrigin.host() == QString("web.whatsapp.com") &&
-            securityOrigin.scheme() == QString("https") &&
-            feature == QWebEnginePage::MediaAudioCapture)
+            (feature == QWebEnginePage::Notifications ||
+             feature == QWebEnginePage::MediaAudioCapture))
         m_page->setFeaturePermission(securityOrigin,
                                      feature,
                                      QWebEnginePage::PermissionGrantedByUser);
