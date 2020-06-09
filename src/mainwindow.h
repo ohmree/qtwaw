@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Marco Scarpetta
+/* Copyright (C) 2019-2020 Marco Scarpetta
  *
  * This file is part of QtWAW.
  *

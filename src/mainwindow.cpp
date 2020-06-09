@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Marco Scarpetta
+/* Copyright (C) 2019-2020 Marco Scarpetta
  *
  * This file is part of QtWAW.
  *
@@ -28,8 +28,8 @@
 #include <QDesktopServices>
 #include <QPainterPath>
 
-#define USER_AGENT "Mozilla/5.0 (X11; Linux x86_64; rv:74.0) \
-Gecko/20100101 Firefox/74.0"
+#define USER_AGENT "Mozilla/5.0 (X11; Linux x86_64; rv:77.0) Gecko/20100101 \
+Firefox/77.0"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

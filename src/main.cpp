@@ -1,4 +1,4 @@
-/* Copyright (C) 2019 Marco Scarpetta
+/* Copyright (C) 2019-2020 Marco Scarpetta
  *
  * This file is part of QtWAW.
  *
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("QtWAW");
     QCoreApplication::setOrganizationDomain("scarpetta.eu");
     QCoreApplication::setApplicationName("qtwaw");
-    QCoreApplication::setApplicationVersion("1.6.9");
+    QCoreApplication::setApplicationVersion("1.6.10");
 
     // Set application informations
     QApplication app(argc, argv);
