@@ -28,7 +28,7 @@
 #include <QWebEngineNotification>
 #include <QSettings>
 #include <KF5/KNotifications/KStatusNotifierItem>
-#include <QNetworkConfigurationManager>
+#include <KF5/NetworkManagerQt/NetworkManagerQt/Manager>
 
 class MainWindow : public QMainWindow
 {
@@ -37,7 +37,9 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
 
 public slots:
-    void online_status_changed(bool is_online);
+    void load_whatsapp();
+
+    void load_finished();
 
     void FIXME_trigger_permission_request();
 
@@ -72,8 +74,7 @@ public slots:
 
 private:
     QSettings *m_settings;
-
-    QNetworkConfigurationManager * m_net_manager;
+    int m_connection_timeout;
     QWebEngineView m_view;
     QWebEngineProfile *m_profile;
     WebEnginePage *m_page;

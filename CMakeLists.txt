@@ -10,6 +10,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 find_package(Qt5 REQUIRED COMPONENTS Widgets LinguistTools WebEngineWidgets)
 find_package(KF5DBusAddons)
 find_package(KF5Notifications)
+find_package(KF5NetworkManagerQt)
 
 SET(SRCS
     src/main.cpp
@@ -38,9 +39,11 @@ target_link_libraries(
     ${Qt5WebEngineWidgets_LIBRARIES}
     KF5::Notifications
     KF5::DBusAddons
+    KF5::NetworkManagerQt
 )
 
 install(TARGETS qtwaw RUNTIME DESTINATION bin)
+install(FILES resources/loading.html DESTINATION share/qtwaw)
 install(FILES resources/eu.scarpetta.QtWAW.desktop DESTINATION share/applications)
 install(FILES resources/icon.svg DESTINATION share/icons/hicolor/scalable/apps RENAME eu.scarpetta.QtWAW.svg)
 install(FILES resources/icon_48.png DESTINATION share/icons/hicolor/48x48/apps RENAME eu.scarpetta.QtWAW.png)

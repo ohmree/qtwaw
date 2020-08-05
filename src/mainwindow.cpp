@@ -28,13 +28,15 @@
 #include <QDesktopServices>
 #include <QPainterPath>
 
-#define USER_AGENT "Mozilla/5.0 (X11; Linux x86_64; rv:77.0) Gecko/20100101 \
-Firefox/77.0"
+#define USER_AGENT "Mozilla/5.0 (X11; Linux x86_64; rv:79.0) Gecko/20100101 \
+Firefox/79.0"
+
+#define WHATSAPP_URL "https://web.whatsapp.com"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     m_settings(new QSettings(this)),
-    m_net_manager(new QNetworkConfigurationManager(this)),
+    m_connection_timeout(500),
     m_status_notifier(new KStatusNotifierItem(this))
 {
     m_profile = new QWebEngineProfile("QtWAW", this);
@@ -44,10 +46,10 @@ MainWindow::MainWindow(QWidget *parent) :
                          "eu.scarpetta.QtWAW.png").arg(
                      qApp->applicationDirPath()));
 
-    // workaround: remove "Service Worker" directory
-    QDir web_engine_dir(m_profile->persistentStoragePath());
-    web_engine_dir.cd("Service Worker");
-    web_engine_dir.removeRecursively();
+//    // workaround: remove "Service Worker" directory
+//    QDir web_engine_dir(m_profile->persistentStoragePath());
+//    web_engine_dir.cd("Service Worker");
+//    web_engine_dir.removeRecursively();
 
     // Main winow properties
     this->setMinimumSize(400, 400);
@@ -153,12 +155,7 @@ MainWindow::MainWindow(QWidget *parent) :
     };
 
     m_profile->setNotificationPresenter(presenter);
-    m_page->load(QUrl("https://web.whatsapp.com"));
-    m_page->setZoomFactor(m_settings->value("zoom_factor").toReal());
     m_view.setPage(m_page);
-
-    QTimer timer;
-    timer.singleShot(60000, this, SLOT(FIXME_trigger_permission_request()));
 
     connect(m_page,
             SIGNAL(titleChanged(const QString)),
@@ -174,11 +171,16 @@ MainWindow::MainWindow(QWidget *parent) :
             SIGNAL(downloadRequested(QWebEngineDownloadItem *)),
             SLOT(download_requested(QWebEngineDownloadItem *)));
 
-    // Check if the system is online
-    if (!m_net_manager->isOnline())
-        connect(m_net_manager,
-                SIGNAL(onlineStateChanged(bool)),
-                SLOT(online_status_changed(bool)));
+    connect(m_page, &QWebEnginePage::loadFinished, this,
+            &MainWindow::load_finished);
+
+    // load whatsapp web
+    QFile loading_page(QString("%1/../share/qtwaw/loading.html").arg(
+                                   qApp->applicationDirPath()));
+    loading_page.open(QFile::ReadOnly);
+    m_page->setContent(loading_page.readAll(), "text/html");
+    loading_page.close();
+    load_whatsapp();
 
     if (m_settings->value("start_minimized", false).toBool())
         this->hide();
@@ -186,17 +188,22 @@ MainWindow::MainWindow(QWidget *parent) :
         this->show();
 }
 
-void MainWindow::online_status_changed(bool is_online)
+void MainWindow::load_whatsapp()
 {
-    if (is_online)
-    {
-        m_view.reload();
+    if (m_connection_timeout < 9000)
+        m_connection_timeout *= 2;
+    if (NetworkManager::connectivity() == NetworkManager::Connectivity::Full)
+        m_page->load(QUrl(WHATSAPP_URL));
+    else
+        QTimer::singleShot(m_connection_timeout, this,
+                           &MainWindow::load_whatsapp);
+}
 
-        disconnect(m_net_manager,
-                   SIGNAL(onlineStateChanged(bool)),
-                   this,
-                   SLOT(gone_online()));
-    }
+void MainWindow::load_finished()
+{
+    m_page->setZoomFactor(m_settings->value("zoom_factor").toReal());
+    QTimer::singleShot(60000, this,
+                       SLOT(FIXME_trigger_permission_request()));
 }
 
 void MainWindow::FIXME_trigger_permission_request()
