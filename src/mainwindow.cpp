@@ -28,8 +28,8 @@
 #include <QDesktopServices>
 #include <QPainterPath>
 
-#define USER_AGENT "Mozilla/5.0 (X11; Linux x86_64; rv:79.0) Gecko/20100101 \
-Firefox/79.0"
+#define USER_AGENT "Mozilla/5.0 (X11; Linux x86_64; rv:80.0) Gecko/20100101 \
+Firefox/80.0"
 
 #define WHATSAPP_URL "https://web.whatsapp.com"
 
