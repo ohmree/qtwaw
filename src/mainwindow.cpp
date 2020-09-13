@@ -42,9 +42,13 @@ MainWindow::MainWindow(QWidget *parent) :
     m_profile = new QWebEngineProfile("QtWAW", this);
     m_page = new WebEnginePage(m_profile, this);
 
-    icon = QIcon(QString("%1/../share/icons/hicolor/256x256/apps/"
-                         "eu.scarpetta.QtWAW.png").arg(
-                     qApp->applicationDirPath()));
+    m_scalable_icon_path = "%1/../share/icons/hicolor/scalable/apps/"
+                           "eu.scarpetta.QtWAW.svg";
+    m_scalable_icon_path = m_scalable_icon_path.arg(qApp->applicationDirPath());
+
+    m_icon = QIcon(QString("%1/../share/icons/hicolor/256x256/apps/"
+                           "eu.scarpetta.QtWAW.png").arg(
+                       qApp->applicationDirPath()));
 
 //    // workaround: remove "Service Worker" directory
 //    QDir web_engine_dir(m_profile->persistentStoragePath());
@@ -286,7 +290,7 @@ void MainWindow::title_changed(const QString &title)
     if (a > -1)
     {
         QString count = title.mid(a + 1, title.indexOf(')') - a - 1);
-        QPixmap pixmap = icon.pixmap(256);
+        QPixmap pixmap = m_icon.pixmap(256);
         QPainter painter(&pixmap);
 
         int font_size = 150;
@@ -315,7 +319,9 @@ void MainWindow::title_changed(const QString &title)
     }
     else
     {
-        m_status_notifier->setIconByName("eu.scarpetta.QtWAW");
+        // Use full path of the icon instead of the name for compatibility with
+        // xfce
+        m_status_notifier->setIconByName(m_scalable_icon_path);
         m_status_notifier->setStatus(KStatusNotifierItem::Passive);
     }
 }

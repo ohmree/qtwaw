@@ -79,7 +79,8 @@ private:
     QWebEngineProfile *m_profile;
     WebEnginePage *m_page;
     KStatusNotifierItem *m_status_notifier;
-    QIcon icon;
+    QIcon m_icon;
+    QString m_scalable_icon_path;
 };
 
 #endif // MAINWINDOW_H
