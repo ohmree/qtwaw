@@ -10,7 +10,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 find_package(Qt5 REQUIRED COMPONENTS Widgets LinguistTools WebEngineWidgets)
 find_package(KF5DBusAddons)
 find_package(KF5Notifications)
-find_package(KF5NetworkManagerQt)
 
 SET(SRCS
     src/main.cpp
@@ -39,7 +38,6 @@ target_link_libraries(
     ${Qt5WebEngineWidgets_LIBRARIES}
     KF5::Notifications
     KF5::DBusAddons
-    KF5::NetworkManagerQt
 )
 
 install(TARGETS qtwaw RUNTIME DESTINATION bin)

@@ -28,15 +28,14 @@
 #include <QDesktopServices>
 #include <QPainterPath>
 
-#define USER_AGENT "Mozilla/5.0 (X11; Linux x86_64; rv:80.0) Gecko/20100101 \
-Firefox/80.0"
+#define USER_AGENT "Mozilla/5.0 (X11; Linux x86_64; rv:80.0) Gecko/20100101 Firefox/80.0"
 
 #define WHATSAPP_URL "https://web.whatsapp.com"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     m_settings(new QSettings(this)),
-    m_connection_timeout(500),
+    m_connection_timeout(250),
     m_status_notifier(new KStatusNotifierItem(this))
 {
     m_profile = new QWebEngineProfile("QtWAW", this);
@@ -184,6 +183,9 @@ MainWindow::MainWindow(QWidget *parent) :
     loading_page.open(QFile::ReadOnly);
     m_page->setContent(loading_page.readAll(), "text/html");
     loading_page.close();
+
+    connect(&m_network_access_manager, &QNetworkAccessManager::finished,
+            this, &MainWindow::reply_finished);
     load_whatsapp();
 
     if (m_settings->value("start_minimized", false).toBool())
@@ -194,13 +196,24 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::load_whatsapp()
 {
-    if (m_connection_timeout < 9000)
+    if (m_connection_timeout < 4001)
         m_connection_timeout *= 2;
-    if (NetworkManager::connectivity() == NetworkManager::Connectivity::Full)
+
+    // check connectivity
+    m_network_access_manager.get(QNetworkRequest(QUrl("http://www.whatsapp.com")));
+}
+
+void MainWindow::reply_finished(QNetworkReply *reply)
+{
+    // load whatsapp web if there is connectivity,
+    // re-test after the timeout if there isn't connectivity
+
+    if (reply->error() == QNetworkReply::NoError)
         m_page->load(QUrl(WHATSAPP_URL));
     else
-        QTimer::singleShot(m_connection_timeout, this,
-                           &MainWindow::load_whatsapp);
+        QTimer::singleShot(m_connection_timeout, this, &MainWindow::load_whatsapp);
+
+    reply->deleteLater();
 }
 
 void MainWindow::load_finished()

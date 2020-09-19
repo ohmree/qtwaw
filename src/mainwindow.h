@@ -27,8 +27,9 @@
 #include <QWebEngineProfile>
 #include <QWebEngineNotification>
 #include <QSettings>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
 #include <KF5/KNotifications/KStatusNotifierItem>
-#include <KF5/NetworkManagerQt/NetworkManagerQt/Manager>
 
 class MainWindow : public QMainWindow
 {
@@ -38,6 +39,8 @@ public:
 
 public slots:
     void load_whatsapp();
+
+    void reply_finished(QNetworkReply* reply);
 
     void load_finished();
 
@@ -74,6 +77,7 @@ public slots:
 
 private:
     QSettings *m_settings;
+    QNetworkAccessManager m_network_access_manager;
     int m_connection_timeout;
     QWebEngineView m_view;
     QWebEngineProfile *m_profile;
