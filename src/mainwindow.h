@@ -84,7 +84,6 @@ private:
     WebEnginePage *m_page;
     KStatusNotifierItem *m_status_notifier;
     QIcon m_icon;
-    QString m_scalable_icon_path;
 };
 
 #endif // MAINWINDOW_H
