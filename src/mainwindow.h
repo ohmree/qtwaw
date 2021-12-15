@@ -21,15 +21,14 @@
 
 #include "webenginepage.h"
 
+#include <KF5/KNotifications/KStatusNotifierItem>
 #include <QMainWindow>
-#include <QSettings>
-#include <QtWebEngineWidgets/QWebEngineView>
-#include <QWebEngineProfile>
-#include <QWebEngineNotification>
-#include <QSettings>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <KF5/KNotifications/KStatusNotifierItem>
+#include <QSettings>
+#include <QWebEngineNotification>
+#include <QWebEngineProfile>
+#include <QtWebEngineWidgets/QWebEngineView>
 
 class MainWindow : public QMainWindow
 {
@@ -38,51 +37,53 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
 
 public slots:
-    void load_whatsapp();
+    void loadWhatsapp();
 
-    void reply_finished(QNetworkReply* reply);
+    void replyFinished(QNetworkReply *reply);
 
-    void load_finished();
+    void loadFinished();
 
-    void FIXME_trigger_permission_request();
+    void FIXME_triggerPermissionRequest();
 
-    void feature_request(const QUrl &securityOrigin,
-                         QWebEnginePage::Feature feature);
+    void featureRequested(const QUrl &securityOrigin, QWebEnginePage::Feature feature);
 
-    void raise_main_window();
+    void raiseMainWindow();
 
-    void zoom_in();
+    void zoomIn();
 
-    void zoom_out();
+    void zoomOut();
 
-    void zoom_original();
+    void zoomOriginal();
 
     void reload();
 
-    void start_minimized_toggled(bool checked);
+    void startMinimizedToggled(bool checked);
 
-    void close_to_tray_toggled(bool checked);
+    void closeToTrayToggled(bool checked);
 
-    void title_changed(const QString &title);
+    void titleChanged(const QString &title);
 
-    void notification_presenter(QWebEngineNotification *notification);
+    void notificationPresenter(QWebEngineNotification *notification);
 
-    void download_requested(QWebEngineDownloadItem *download);
+    void downloadRequested(QWebEngineDownloadItem *download);
 
-    void download_finished();
+    void downloadFinished();
 
     void closeEvent(QCloseEvent *event);
 
     void quit();
 
 private:
+    const QString userAgent() const;
+    const QString whatsappUrl() const;
+
     QSettings *m_settings;
-    QNetworkAccessManager m_network_access_manager;
-    int m_connection_timeout;
+    QNetworkAccessManager m_networkAccessManager;
+    int m_connectionTimeout;
     QWebEngineView m_view;
     QWebEngineProfile *m_profile;
     WebEnginePage *m_page;
-    KStatusNotifierItem *m_status_notifier;
+    KStatusNotifierItem *m_statusNotifier;
     QIcon m_icon;
 };
 

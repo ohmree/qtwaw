@@ -28,13 +28,13 @@ public:
     WebEnginePage(QWebEngineProfile *profile, QObject *parent = nullptr);
 
 public slots:
-    void new_tab_load_started();
+    void newTabLoadStarted();
 
 protected:
     QWebEnginePage *createWindow(QWebEnginePage::WebWindowType type);
 
 private:
-    QWebEnginePage *m_new_tab_page;
+    QWebEnginePage *m_newTabPage;
 };
 
 #endif // WEBENGINEPAGE_H

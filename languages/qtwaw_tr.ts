@@ -4,48 +4,59 @@
 <context>
     <name>MainWindow</name>
     <message>
+        <location filename="../src/mainwindow.cpp" line="62"/>
         <source>Quit</source>
-        <translation>Çıkış</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/mainwindow.cpp" line="67"/>
         <source>Zoom in</source>
-        <translation>Yakınlaştır</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/mainwindow.cpp" line="72"/>
         <source>Zoom out</source>
-        <translation>Uzaklaştır</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/mainwindow.cpp" line="77"/>
         <source>Original size</source>
-        <translation>Orijinal boyut</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/mainwindow.cpp" line="78"/>
         <source>Ctrl+0</source>
-        <translation>CTRL+0</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../src/mainwindow.cpp" line="82"/>
         <source>Refresh</source>
-        <translation>Yenile</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Download completed</source>
-        <translation>İndirme tamamlandı</translation>
-    </message>
-    <message>
-        <source>File %1 have beens successfully downloaded</source>
-        <translation>%1 dosyası başarıyla indirildi</translation>
-    </message>
-    <message>
+        <location filename="../src/mainwindow.cpp" line="87"/>
         <source>Start minimized</source>
-        <translation>Küçültülmüş olarak başlat</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Open</source>
-        <translation>Aç</translation>
-    </message>
-    <message>
+        <location filename="../src/mainwindow.cpp" line="92"/>
         <source>Close to tray</source>
-        <translation>Sistem tepsisine kapat</translation>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="290"/>
+        <source>Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="316"/>
+        <source>Download completed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/mainwindow.cpp" line="317"/>
+        <source>File %1 have beens successfully downloaded</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

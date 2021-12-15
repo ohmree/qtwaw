@@ -20,33 +20,29 @@
 
 #include <QDesktopServices>
 
-WebEnginePage::WebEnginePage(QWebEngineProfile *profile, QObject *parent) :
-    QWebEnginePage(profile, parent),
-    m_new_tab_page(nullptr)
+WebEnginePage::WebEnginePage(QWebEngineProfile *profile, QObject *parent)
+    : QWebEnginePage(profile, parent)
+    , m_newTabPage(nullptr)
 {
-
 }
 
 QWebEnginePage *WebEnginePage::createWindow(QWebEnginePage::WebWindowType type)
 {
     Q_UNUSED(type)
 
-    if (m_new_tab_page == nullptr)
-    {
-        m_new_tab_page = new QWebEnginePage();
-        connect(m_new_tab_page,
-                SIGNAL(loadStarted()),
-                SLOT(new_tab_load_started()));
-        return m_new_tab_page;
+    if (m_newTabPage == nullptr) {
+        m_newTabPage = new QWebEnginePage();
+        connect(m_newTabPage, &QWebEnginePage::loadStarted, this, &WebEnginePage::newTabLoadStarted);
+        return m_newTabPage;
     }
 
     return nullptr;
 }
 
-void WebEnginePage::new_tab_load_started()
+void WebEnginePage::newTabLoadStarted()
 {
-    QDesktopServices::openUrl(m_new_tab_page->requestedUrl());
+    QDesktopServices::openUrl(m_newTabPage->requestedUrl());
 
-    delete m_new_tab_page;
-    m_new_tab_page = nullptr;
+    delete m_newTabPage;
+    m_newTabPage = nullptr;
 }

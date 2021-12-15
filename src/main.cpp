@@ -16,46 +16,38 @@
  * along with QtWAW. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <KDBusAddons/KDBusService>
 #include <QApplication>
 #include <QTranslator>
-#include <KDBusAddons/KDBusService>
 
 #include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication::setOrganizationName("QtWAW");
-    QCoreApplication::setOrganizationDomain("scarpetta.eu");
-    QCoreApplication::setApplicationName("qtwaw");
-    QCoreApplication::setApplicationVersion("1.6.14");
+    QCoreApplication::setOrganizationName(QStringLiteral("QtWAW"));
+    QCoreApplication::setOrganizationDomain(QStringLiteral("scarpetta.eu"));
+    QCoreApplication::setApplicationName(QStringLiteral("qtwaw"));
+    QCoreApplication::setApplicationVersion(QStringLiteral("1.6.14"));
 
     // Set application informations
     QApplication app(argc, argv);
 
-    app.setApplicationDisplayName("QtWAW");
-    app.setDesktopFileName("eu.scarpetta.QtWAW");
+    app.setApplicationDisplayName(QStringLiteral("QtWAW"));
+    app.setDesktopFileName(QStringLiteral("eu.scarpetta.QtWAW"));
 
     KDBusService service(KDBusService::Unique);
 
     // Set up translations
     QTranslator translator;
 
-    bool ok = translator.load(
-                QString("qtwaw_%1.qm").arg(QLocale::system().name()),
-                QString("%1/../share/qtwaw/translations").arg(
-                    qApp->applicationDirPath()
-                    )
-                );
+    bool ok = translator.load(QStringLiteral("qtwaw_%1.qm").arg(QLocale::system().name()), QStringLiteral("%1/../share/qtwaw/translations").arg(qApp->applicationDirPath()));
 
-    if (ok) app.installTranslator(&translator);
+    if (ok)
+        app.installTranslator(&translator);
 
     // Create and show the main window
     MainWindow *main_window = new MainWindow();
 
-    QObject::connect(&service,
-                     SIGNAL(activateRequested(const QStringList &,
-                                              const QString &)),
-                     main_window,
-                     SLOT(raise_main_window()));
+    QObject::connect(&service, &KDBusService::activateRequested, main_window, &MainWindow::raiseMainWindow);
     return app.exec();
 }
