@@ -30,7 +30,7 @@
 
 const QString MainWindow::userAgent() const
 {
-    return QStringLiteral("Mozilla/5.0 (X11; Linux x86_64; rv:95.0) Gecko/20100101 Firefox/95.0");
+    return QStringLiteral("Mozilla/5.0 (X11; Linux x86_64; rv:95.0) Gecko/20100101 Firefox/96.0");
 }
 const QString MainWindow::whatsappUrl() const
 {
